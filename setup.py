@@ -7,6 +7,6 @@ setup(
     url='https://github.com/sparkspay/sparks-mnrank',
     license='MIT',
     author='m0r4k',
-    author_email='m0r4k@outlook.com',
+    author_email='mor4k@outlook.com',
     description='Sparks RankViewer'
 )
