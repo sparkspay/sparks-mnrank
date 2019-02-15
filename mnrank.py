@@ -282,7 +282,7 @@ class Coin:
             if _out['daemonversion'] == '0.12.3.5':
                 dcol = bcolors.OKGREEN
             elif _out['daemonversion'] == '0.12.3.4':
-                dcol = bcolors.OKBL
+                dcol = bcolors.OKBLUE
             
             paycol = bcolors.OKBLUE
 
