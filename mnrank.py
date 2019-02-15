@@ -277,7 +277,13 @@ class Coin:
             pcol = _out['protocol'] > 20208 and bcolors.OKGREEN or bcolors.FAIL
             scol = _out['sentinelversion'] == '1.2.0' and bcolors.OKGREEN or bcolors.FAIL
             stcol = _out['status'] == 'ENABLED' and bcolors.OKGREEN or bcolors.FAIL
-            dcol = _out['daemonversion'] == '0.12.3.4' and bcolors.OKGREEN or bcolors.FAIL
+            dcol = bcolors.FAIL
+
+            if _out['daemonversion'] == '0.12.3.5':
+                dcol = bcolors.OKGREEN
+            elif _out['daemonversion'] == '0.12.3.4':
+                dcol = bcolors.OKBLUE
+
             paycol = bcolors.OKBLUE
 
             last_paid_time_h = cls.timeCalc(now - _out['lastpaidtime'])
@@ -305,5 +311,10 @@ class Coin:
         print('amountof listed MASTERNODES [' + str(len(conf_dict)) + ']')
 
 
-Coin.buildfiles()
-Coin.printoutput()
+def main():
+    Coin.buildfiles()
+    Coin.printoutput()
+
+
+if __name__ == "__main__":
+    main()
