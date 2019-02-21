@@ -6,11 +6,23 @@ import collections
 
 mn_dict = Coin.clicmd('masternode list')
 
-inter_list = []
+mn_list = []
 for i in mn_dict:
-    inter_list.append(mn_dict[i]['status'])
+    mn_list.append(mn_dict[i]['status'])
 
-counter=collections.Counter(inter_list)
+version_list = []
+for i in mn_dict:
+    version_list.append(mn_dict[i]['daemonversion'])
 
-print(counter)
+protocol_list = []
+for i in mn_dict:
+    protocol_list.append(mn_dict[i]['protocol'])
+
+mn_counter=collections.Counter(mn_list)
+count_version = collections.Counter(version_list)
+count_protocol = collections.Counter(protocol_list)
+
+print(mn_counter)
+print(count_version)
+print(count_protocol)
 
