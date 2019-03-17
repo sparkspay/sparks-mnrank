@@ -1,3 +1,8 @@
 *.json
 *.conf
 .idea
+__pychache__
+.pyc
+build
+dist
+*.egg-info
