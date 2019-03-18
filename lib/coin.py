@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import json
 import subprocess
 from collections import OrderedDict
@@ -9,37 +7,25 @@ import os
 import datetime
 import sys
 import tempfile
-
-
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+from lib.arguments import largs
 
 
 class Coin:
     # PARAMETERS #
     cache_time_min = 3
     coin_cli = 'sparks-cli'
+    std_conf_file = 'mn_conf.json'
     tdir = tempfile.gettempdir()
 
-    Config_file = tdir+'/mn.conf'
-    list_file = tdir+'/mn_list.json'
+    # Config_file = tdir+'/mn.conf'
+    list_file = tdir + '/mn_list.json'
 
-    output_file = tdir+'/mn_output.json'
+    # output_file = tdir+'/mn_output.json'
     _now_ = int(datetime.datetime.now().strftime("%s"))
 
+    conf_file = largs.evaluateargs()['f']
+    #exit()
 
-    if len(sys.argv) > 1:
-        conf_file = sys.argv[1]
-    else:
-        conf_file = './mn_conf.json'
 
     @classmethod
     def checkmnsync(cls):
@@ -55,17 +41,17 @@ class Coin:
     def buildfiles(cls):
 
         cls.checkmnsync()
+        if not cls.conf_file:
+            cls.conf_file = 'mn_conf.json'
 
-        if len(sys.argv) == 1:
-            if cls.fileage(cls.conf_file) == 0:
-                cls.writefile(cls.conf_file, Coin.clicmd(
-                    'masternode list-conf', hook='conf-hook'))
-        else:
-            if cls.fileage(sys.argv[1]) == 0:
-                print('config file not found please check')
-                cls.stdconf(sys.argv[1])
-            else:
-                print('file found ' + sys.argv[1])
+        if cls.conf_file != cls.std_conf_file and cls.fileage(cls.conf_file) == 0:
+            cls.stdconf(cls.conf_file)
+
+        if cls.fileage(cls.conf_file) == 0:
+            cls.writefile(cls.conf_file, Coin.clicmd(
+                'masternode list-conf', hook='conf-hook'))
+
+
 
         if cls.fileage(cls.list_file) == 0 or cls.fileage(cls.list_file) >= cls.cache_time_min:
             cls.writefile(cls.list_file, Coin.clicmd('masternode list'))
@@ -128,7 +114,6 @@ class Coin:
 
     @classmethod
     def writefile(cls, filename, data, sort_keys=True, indent=4):
-
 
         file_age = cls.fileage(filename)
         if file_age > cls.cache_time_min or file_age == 0:
@@ -209,7 +194,10 @@ class Coin:
             ip_pos[list_dict[i]['address'].split(':')[0]] = list_dict[i]['pos']
 
         for i in ip_name:
-            r_data[ip_pos[i]] = [ip_txid[i], ip_name[i]]
+            if i in ip_pos:
+                r_data[ip_pos[i]] = [ip_txid[i], ip_name[i]]
+            else:
+                print('WARNING the IP <' + i + '> is not in mnlist')
 
         return r_data
 
@@ -225,96 +213,3 @@ class Coin:
             return str(str(day).zfill(2) + 'd ' + str(hour).zfill(2) + ':' + str(minutes).zfill(2))
         else:
             return str('00d 00:00')
-
-    @classmethod
-    def printoutput(cls):
-        list_dict = cls.openfile(cls.list_file)
-        conf_dict = cls.openfile(cls.conf_file)
-        list_dict_filtered = cls.filteranks(list_dict, conf_dict)
-
-        list_dict_txid = cls.ip2txid(list_dict_filtered, conf_dict)
-        list_dict_txid_reversed = OrderedDict(
-            reversed(list(list_dict_txid.items())))
-
-        # rename for easy lines
-        _output = list_dict_txid_reversed
-        _list = list_dict_filtered
-        _max_rank = len(_list)
-        now = int(datetime.datetime.now().strftime("%s"))
-
-        # BEGIN
-        print('{:-<132}'.format(bcolors.HEADER + '' + bcolors.ENDC), end=' \n')
-
-        # HEADER
-        print('{:<1s}'.format(bcolors.ENDC + '|'), end=' ')
-        print('{:<25}'.format(bcolors.BOLD + bcolors.HEADER + 'Masternode' + bcolors.ENDC), end=' ')
-        print('{:<25}'.format(bcolors.BOLD + 'IP-Address' + bcolors.ENDC), end=' ')
-        print('{:>4s}'.format('MAX'), end=' ')
-        print('{:1s}'.format('|'), end=' ')
-        print('{:>4s}'.format('PO'), end=' ')
-        print('{:>3s}'.format(''), end='')
-        print('{:<1s}'.format('%'), end=' ')
-        print('{:>3s}'.format('|'), end=' ')
-        print('{:>15s}'.format(bcolors.OKGREEN + 'Proto' + bcolors.ENDC), end=' ')
-        print('{:>1s}'.format('|'), end=' ')
-        print('{:<18s}'.format(bcolors.OKGREEN + 'sentinel' + bcolors.ENDC), end=' ')
-        print('{:1s}'.format('|'), end=' ')
-        print('{:<18s}'.format(bcolors.OKGREEN + 'daemon' + bcolors.ENDC), end=' ')
-        print('{:1s}'.format('|'), end=' ')
-        print('{:<18s}'.format(bcolors.OKBLUE + 'lastpaid' + bcolors.ENDC), end=' ')
-        print('{:1s}'.format('|'), end=' ')
-        print('{:<31s}'.format(bcolors.OKBLUE + 'status' + bcolors.ENDC), end=' |\n')
-
-        # END
-        print('{:-<132}'.format(bcolors.HEADER + bcolors.ENDC), end='\n')
-
-        for line in sorted(_output, reverse=False):
-            txid = _output[line][0]
-            _name = _output[line][1]
-            _out = _list[txid]
-
-            position = _out['pos'] / _max_rank * 100
-            pcol = _out['protocol'] > 20208 and bcolors.OKGREEN or bcolors.FAIL
-            scol = _out['sentinelversion'] == '1.2.0' and bcolors.OKGREEN or bcolors.FAIL
-            stcol = _out['status'] == 'ENABLED' and bcolors.OKGREEN or bcolors.FAIL
-            dcol = bcolors.FAIL
-
-            if _out['daemonversion'] == '0.12.3.5':
-                dcol = bcolors.OKGREEN
-            elif _out['daemonversion'] == '0.12.3.4':
-                dcol = bcolors.OKBLUE
-
-            paycol = bcolors.OKBLUE
-
-            last_paid_time_h = cls.timeCalc(now - _out['lastpaidtime'])
-
-            print('{:<1s}'.format(bcolors.ENDC + '|'), end=' ')
-            print('{:<25}'.format(bcolors.BOLD + bcolors.OKBLUE + _name + bcolors.ENDC), end=' ')
-            print('{:<25}'.format(bcolors.BOLD + _out['address'].split(':')[0] + bcolors.ENDC), end=' ')
-            print('{:4d}'.format(_max_rank), end=' ')
-            print('{:1s}'.format('|'), end=' ')
-            print('{:>4d}'.format(_out['pos']), end=' ')
-            print('{:>3d}'.format(round(position)), end='')
-            print('{:<1s}'.format('%'), end=' ')
-            print('{:>3s}'.format('|'), end=' ')
-            print('{:>15s}'.format(pcol + str(_out['protocol']) + bcolors.ENDC), end=' ')
-            print('{:>1s}'.format('|'), end=' ')
-            print('{:<18s}'.format(scol + str(_out['sentinelversion']) + bcolors.ENDC), end=' ')
-            print('{:1s}'.format('|'), end=' ')
-            print('{:<18s}'.format(dcol + str(_out['daemonversion']) + bcolors.ENDC), end=' ')
-            print('{:1s}'.format('|'), end=' ')
-            print('{:<18s}'.format(paycol + last_paid_time_h + bcolors.ENDC), end=' ')
-            print('{:1s}'.format('|'), end=' ')
-            print('{:<28s}'.format(stcol + str(_out['status'])), end=bcolors.ENDC + '| \n')
-
-        print('{:-<132}'.format(bcolors.HEADER + bcolors.ENDC), end='\n')
-        print('amountof listed MASTERNODES [' + str(len(conf_dict)) + ']')
-
-
-def main():
-    Coin.buildfiles()
-    Coin.printoutput()
-
-
-if __name__ == "__main__":
-    main()
