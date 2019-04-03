@@ -10,7 +10,7 @@ class largs:
     def evaluateargs(cls):
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "hf:sl"
+        unixOptions = "hf:slq"
         gnuOptions = ["help", "file=", "stats", "listconf"]
         args = {'f': False}
 
@@ -25,8 +25,6 @@ class largs:
             cls.printhelp()
             sys.exit(2)
 
-
-
         for currentArgument, currentValue in arguments:
 
             if currentArgument in ("-h", "--help"):
@@ -39,6 +37,8 @@ class largs:
                 args.update({'s': True})
             elif currentArgument in ("-f", "--file"):
                 args['f'] = currentValue
+            elif currentArgument in ("-q", "--query"):
+                args.update({'q': True})
 
         return args
 
@@ -52,6 +52,8 @@ class largs:
         print('{:<25}'.format(bcolors.BOLD + ': mnstats' + bcolors.ENDC), end=' \n')
         print('{:<25}'.format(bcolors.BOLD + '-l / --listconf' + bcolors.ENDC), end=' ')
         print('{:<25}'.format(bcolors.BOLD + ': list configfile' + bcolors.ENDC), end=' \n')
+        print('{:<25}'.format(bcolors.BOLD + '-q / --query' + bcolors.ENDC), end=' ')
+        print('{:<25}'.format(bcolors.BOLD + ': list masternodes' + bcolors.ENDC), end=' \n')
 
 
     @classmethod
@@ -60,6 +62,5 @@ class largs:
         print(file.read())
 
 
-#print(largs.evaluateargs())
 
 

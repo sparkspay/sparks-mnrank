@@ -59,9 +59,9 @@ def printoutput():
         stcol = _out['status'] == 'ENABLED' and bcolors.OKGREEN or bcolors.FAIL
         dcol = bcolors.FAIL
 
-        if _out['daemonversion'] == '0.12.3.5':
+        if _out['daemonversion'] == '0.12.4':
             dcol = bcolors.OKGREEN
-        elif _out['daemonversion'] == '0.12.3.4':
+        elif _out['daemonversion'] == '0.12.3.6':
             dcol = bcolors.OKBLUE
 
         paycol = bcolors.OKBLUE

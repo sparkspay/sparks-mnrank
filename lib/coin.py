@@ -24,7 +24,7 @@ class Coin:
     _now_ = int(datetime.datetime.now().strftime("%s"))
 
     conf_file = largs.evaluateargs()['f']
-    #exit()
+
 
 
     @classmethod

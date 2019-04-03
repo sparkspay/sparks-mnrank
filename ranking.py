@@ -6,9 +6,8 @@ from lib.arguments import largs
 import lib.mnstat as mnstat
 
 arguments = largs.evaluateargs()
-print(arguments)
 
-if 'na' in arguments or False != arguments['f']:
+if 'na' in arguments or arguments['f'] is not False or 'q' in arguments:
     Coin.buildfiles()
     lib.mnrank.printoutput()
 
