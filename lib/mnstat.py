@@ -30,6 +30,10 @@ def printoutputs():
 
         return sum
     sum_mn = summns(count_mn)
+    enabled_sum = count_mn['ENABLED']+count_mn['SENTINEL_PING_EXPIRED']
+    gn_sum = count_protocol[70212]
+
+    print(gn_sum/enabled_sum*100)
 
     print('{:<40s}'.format('STATUS'), end='\n')
     print('{:=<40s}'.format(''), end='\n')
@@ -59,6 +63,12 @@ def printoutputs():
 
     print('{:-<40s}'.format(''), end='\n\n')
 
+
+    print('{:<40s}'.format('UPDATE RATE = '+format(str(int(round(gn_sum / enabled_sum * 100, 0))))+' %'), end='\n')
+    print('{:=<40s}'.format(''), end='\n')
+    print('{:<25s}'.format('GN / ENABLED'), end=': ')
+    print('{:>5s}'.format(str(gn_sum)+' / '+str(enabled_sum)), end='\n')
+    print('{:-<40s}'.format(''), end='\n\n')
 
 def main():
     printoutputs()
