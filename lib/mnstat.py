@@ -66,8 +66,8 @@ def printoutputs():
 
     print('{:<40s}'.format('UPDATE RATE = '+format(str(int(round(gn_sum / enabled_sum * 100, 0))))+' %'), end='\n')
     print('{:=<40s}'.format(''), end='\n')
-    print('{:<25s}'.format('GN / ENABLED'), end=': ')
-    print('{:>5s}'.format(str(gn_sum)+' / '+str(enabled_sum)), end='\n')
+    print('{:<25s}'.format('GN / (ENABLED + SENTINEL)'), end=': ')
+    print('{:>12s}'.format(str(gn_sum)+' / '+str(enabled_sum)), end='\n')
     print('{:-<40s}'.format(''), end='\n\n')
 
 def main():
