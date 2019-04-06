@@ -33,7 +33,6 @@ def printoutputs():
     enabled_sum = count_mn['ENABLED']+count_mn['SENTINEL_PING_EXPIRED']
     gn_sum = count_protocol[70212]
 
-    print(gn_sum/enabled_sum*100)
 
     print('{:<40s}'.format('STATUS'), end='\n')
     print('{:=<40s}'.format(''), end='\n')
