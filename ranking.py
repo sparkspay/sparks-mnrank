@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 import lib.mnrank
 from lib.coin import Coin

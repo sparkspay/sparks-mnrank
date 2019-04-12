@@ -6,9 +6,12 @@ import collections
 def printoutputs():
     mn_dict = Coin.clicmd('masternode list')
     mn_list = []
+    mn_list_full = []
+
 
     for i in mn_dict:
         mn_list.append(mn_dict[i]['status'])
+        mn_list_full.append(mn_dict[i])
 
     version_list = []
     for i in mn_dict:
@@ -18,25 +21,41 @@ def printoutputs():
     for i in mn_dict:
         protocol_list.append(mn_dict[i]['protocol'])
 
+    ve_list = []
+    for i in mn_dict:
+        _status = mn_dict[i]['status']
+        if _status == 'ENABLED' or _status == 'SENTINEL_PING_EXPIRED' or _status == 'WATCHDOG_EXPIRED':
+            ve_list.append(mn_dict[i]['daemonversion']+' '+'ACTIVE')
+
     count_mn = collections.Counter(mn_list)
+    count_ve = collections.Counter(ve_list)
     count_version = collections.Counter(version_list)
     count_protocol = collections.Counter(protocol_list)
 
 
-    def summns(collection):
+    def summs(collection):
         sum = 0
         for i in collection:
             sum = sum + collection[i]
 
         return sum
-    sum_mn = summns(count_mn)
+    sum_mn = summs(count_mn)
+    sum_ve = summs(count_ve)
     enabled_sum = count_mn['ENABLED']+count_mn['SENTINEL_PING_EXPIRED']
     gn_sum = count_protocol[70212]
 
 
-    print('{:<40s}'.format('STATUS'), end='\n')
+    print('{:<40s}'.format('ACTIVE'), end='\n')
     print('{:=<40s}'.format(''), end='\n')
 
+    for i in count_ve:
+        print('{:<25s}'.format(i), end=': ')
+        print('{:>5s}'.format(str(count_ve[i])), end=' ')
+        print('{:>5s}'.format(str(int(round(count_ve[i]/sum_ve*100, 0)))), end='%\n')
+
+    print('{:-<40s}'.format(''), end='\n\n')
+    print('{:<40s}'.format('STATUS'), end='\n')
+    print('{:=<40s}'.format(''), end='\n')
     for i in count_mn:
         print('{:<25s}'.format(i), end=': ')
         print('{:>5s}'.format(str(count_mn[i])), end=' ')
