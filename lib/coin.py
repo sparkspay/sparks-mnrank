@@ -24,6 +24,7 @@ class Coin:
     _now_ = int(datetime.datetime.now().strftime("%s"))
 
     conf_file = largs.evaluateargs()['f']
+    _addressindex_ = False
 
 
 
@@ -38,9 +39,24 @@ class Coin:
         return True
 
     @classmethod
+    def checkaddressindex(cls):
+        check = cls.clicmd('getaddressbalance \'{"addresses": ["GSR6AY8GCW8KUf7N5FGz4xxdZpZ3sWkfrR"]}\'')
+        if check['balance']:
+            print('addressindex is working')
+            return True
+
+        return False
+
+    @classmethod
+    def getaddressbalance(cls, address):
+        return cls.clicmd('getaddressbalance \'{"addresses": ["'+address+'"]}\'')
+
+    @classmethod
     def buildfiles(cls):
 
         cls.checkmnsync()
+        cls._addressindex_ = cls.checkaddressindex()
+
         if not cls.conf_file:
             cls.conf_file = 'mn_conf.json'
 

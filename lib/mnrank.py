@@ -7,7 +7,7 @@ from lib.colors import bcolors
 
 
 
-def printoutput():
+def printoutput(aindex = False):
     list_dict = Coin.openfile(Coin.list_file)
     conf_dict = Coin.openfile(Coin.conf_file)
     list_dict_filtered = Coin.filteranks(list_dict, conf_dict)
@@ -22,8 +22,11 @@ def printoutput():
     _max_rank = len(_list)
     now = int(datetime.datetime.now().strftime("%s"))
 
+
+    print (Coin.getaddressbalance('GSR6AY8GCW8KUf7N5FGz4xxdZpZ3sWkfrR'))
+
     # BEGIN
-    print('{:-<132}'.format(bcolors.HEADER + '' + bcolors.ENDC), end=' \n')
+    print('{:-<169}'.format(bcolors.HEADER + '' + bcolors.ENDC), end=' \n')
 
     # HEADER
     print('{:<1s}'.format(bcolors.ENDC + '|'), end=' ')
@@ -43,10 +46,12 @@ def printoutput():
     print('{:1s}'.format('|'), end=' ')
     print('{:<18s}'.format(bcolors.OKBLUE + 'lastpaid' + bcolors.ENDC), end=' ')
     print('{:1s}'.format('|'), end=' ')
-    print('{:<31s}'.format(bcolors.OKBLUE + 'status' + bcolors.ENDC), end=' |\n')
+    print('{:<31s}'.format(bcolors.OKBLUE + 'status' + bcolors.ENDC), end=' ')
+    print('{:1s}'.format('|'), end=' ')
+    print('{:<43s}'.format(bcolors.OKBLUE + 'payee' + bcolors.ENDC), end=' |\n')
 
     # END
-    print('{:-<132}'.format(bcolors.HEADER + bcolors.ENDC), end='\n')
+    print('{:-<169}'.format(bcolors.HEADER + bcolors.ENDC), end='\n')
 
     for line in sorted(_output, reverse=False):
         txid = _output[line][0]
@@ -67,6 +72,8 @@ def printoutput():
         paycol = bcolors.OKBLUE
 
         last_paid_time_h = Coin.timeCalc(now - _out['lastpaidtime'])
+        balance = float(Coin.getaddressbalance(_out['payee'])['balance']/100000000)
+
 
         print('{:<1s}'.format(bcolors.ENDC + '|'), end=' ')
         print('{:<25}'.format(bcolors.BOLD + bcolors.OKBLUE + _name + bcolors.ENDC), end=' ')
@@ -85,9 +92,13 @@ def printoutput():
         print('{:1s}'.format('|'), end=' ')
         print('{:<18s}'.format(paycol + last_paid_time_h + bcolors.ENDC), end=' ')
         print('{:1s}'.format('|'), end=' ')
-        print('{:<28s}'.format(stcol + str(_out['status'])), end=bcolors.ENDC + '| \n')
+        print('{:<28s}'.format(stcol + str(_out['status'])), end=bcolors.ENDC + '')
+        print('{:1s}'.format('|'), end=' ')
+        print('{:<32s}'.format(stcol + str(_out['payee'])), end=bcolors.ENDC + '')
+        print('{:1s}'.format('|'), end=' ')
+        print('{:<32s}'.format(stcol + str(balance)), end=bcolors.ENDC + ' | \n')
 
-    print('{:-<132}'.format(bcolors.HEADER + bcolors.ENDC), end='\n')
+    print('{:-<169}'.format(bcolors.HEADER + bcolors.ENDC), end='\n')
     print('amountof listed MASTERNODES [' + str(len(conf_dict)) + ']')
 
 
